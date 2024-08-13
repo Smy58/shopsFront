@@ -6,29 +6,12 @@
 </template>
 
 <script lang="ts">
-import Product, { ProductInfoProps } from 'components/product/Product.vue'
 import { defineComponent } from 'vue'
+import Product from 'components/product/Product.vue'
 import { useProducts } from 'src/stores/products';
-import { ProductInterface } from 'src/types/product';
 import { useBusket } from 'src/stores/busket';
+import { ProductInterface } from 'src/types/product';
 
-
-// const productMock: ProductInfoProps = {
-//         "id": 1,
-//         "shopId": 2,
-//         "cost": 384,
-//         "product": {
-//             "id": 5,
-//             "name": "dog food",
-//             "description": "-",
-//             "vendorCost": 247,
-//             "image": "img link",
-//             "group": {
-//                 "id": 4,
-//                 "name": "Pet food"
-//             }
-//         }
-//     }
 
 export default defineComponent({
     components: {
@@ -60,10 +43,7 @@ export default defineComponent({
         goBack() {
             this.$router.go(-1)
         }
-    },
-    setup() {
-
-    },
+    }
 })
 </script>
 

@@ -39,7 +39,7 @@
 
                 <q-input
                     filled
-                    v-model="password"
+                    v-model="repPassword"
                     type="password"
                     label="Repeat password *"
                     class="form__input"
@@ -49,7 +49,7 @@
 
                 <q-input
                     filled
-                    v-model="mail"
+                    v-model="phone"
                     type="tel"
                     label="Your Phone *"
                     hint="phone number"
@@ -81,9 +81,16 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    setup() {
-
-    },
+    data() {
+        return {
+            mail: '',
+            password: '',
+            repPassword: '',
+            name: '',
+            address: '',
+            phone: ''
+        }
+    }
 })
 </script>
 

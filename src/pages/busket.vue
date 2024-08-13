@@ -59,7 +59,6 @@ export default defineComponent({
         const busketData = useBusket().getBusket
         this.busket = busketData
 
-        console.log(this.busket);
 
     },
     computed: {
@@ -88,9 +87,6 @@ export default defineComponent({
         costString (cost: number) {
 			return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₸'
 		},
-    },
-    setup() {
-
     },
 })
 </script>

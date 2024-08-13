@@ -67,9 +67,6 @@ export default defineComponent({
             mail: accMock.mail
         }
     },
-    setup() {
-
-    },
 })
 </script>
 

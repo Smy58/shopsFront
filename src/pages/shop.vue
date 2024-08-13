@@ -3,7 +3,7 @@
         <h4 class="text-h4 shop-page__title">{{ shopData.name }}</h4>
 
         <div class="shop-page__content">
-            <ShopFilter />
+            <ShopFilter :groupsList="groupsList" />
 
             <div class="shop-page__list">
                 <ProductCard v-for="item in shopProductsMock" :isBusket="checkItemBusket(item)" :key="item.id" :item="item" />
@@ -378,15 +378,6 @@ const shopProductsMock: ProductInterface[] = [
     }
 ]
 
-const shopMock = {
-    id: 2,
-    name: "Second Shop",
-    address: "Tole bi 112",
-    workTimeStart: "12:00",
-    workTimeEnd: "18:00",
-    waitingTime: 30,
-    image: "image url"
-}
 
 export default defineComponent({
     components: {

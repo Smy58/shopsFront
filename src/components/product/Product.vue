@@ -32,22 +32,6 @@ import { useBusket } from 'src/stores/busket'
 import { ProductClass, ProductInterface } from 'src/types/product'
 import { defineComponent } from 'vue'
 
-export interface ProductInfoProps {
-        id: number,
-        shopId: number,
-        cost: number,
-        product: {
-            id: number,
-            name: string,
-            description: string,
-            vendorCost: number,
-            image: string,
-            group: {
-                id: number,
-                name: string
-            }
-        }
-    }
 
 export default defineComponent({
     name: "Product",

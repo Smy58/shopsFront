@@ -98,9 +98,6 @@ export default defineComponent({
             ordersData: ordersMock
         }
     },
-    setup() {
-
-    },
 })
 </script>
 

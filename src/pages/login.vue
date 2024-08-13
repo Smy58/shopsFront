@@ -38,9 +38,12 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-    setup() {
-
-    },
+    data() {
+        return {
+            mail: '',
+            password: ''
+        }
+    }
 })
 </script>
 

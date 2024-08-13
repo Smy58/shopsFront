@@ -85,9 +85,6 @@ export default defineComponent({
             return false
         },
     },
-    setup() {
-
-    },
 })
 </script>
 

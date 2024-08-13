@@ -10,10 +10,11 @@
 </template>
 
 <script lang="ts">
-import ShopCard, { ShopCardProps } from 'components/shops/Card.vue'
+import ShopCard from 'components/shops/Card.vue'
+import { ShopInterface } from 'src/types/shop'
 import { defineComponent } from 'vue'
 
-const shopsMock: ShopCardProps[] = [
+const shopsMock: ShopInterface[] = [
     {
         id: 2,
         name: "Second Shop",

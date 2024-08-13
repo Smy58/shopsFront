@@ -26,9 +26,12 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
     name: "ShopFilter",
-    setup() {
-
-    },
+    props: {
+        groupsList: {
+            type: Array,
+            required: true
+        }
+    }
 })
 </script>
 

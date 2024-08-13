@@ -20,16 +20,6 @@ import { useShops } from 'src/stores/shops';
 import { ShopClass } from 'src/types/shop';
 import { defineComponent } from 'vue'
 
-export interface ShopCardProps {
-    id: number;
-    name: string;
-    address: string;
-    workTimeStart: string;
-    workTimeEnd: string;
-    waitingTime: number;
-    image: string;
-}
-
 export default defineComponent({
     name: "ShopCard",
     props: {

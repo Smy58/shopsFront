@@ -101,9 +101,6 @@ export default defineComponent({
             products: productsMock
         }
     },
-    setup() {
-
-    },
 })
 </script>
 
