@@ -12,14 +12,22 @@
         />
 
         <q-toolbar-title>
-          Quasar App
+          Shop application
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <router-link to="/account" >
+            <q-chip
+            color="primary" text-color="white"
+            >
+                <q-avatar color="white" text-color="primary">J</q-avatar>
+                Jasmin P.
+            </q-chip>
+        </router-link>
+
       </q-toolbar>
     </q-header>
 
-    <q-drawer
+    <q-drawer width="190"
       v-model="leftDrawerOpen"
       show-if-above
       bordered
@@ -28,7 +36,7 @@
         <q-item-label
           header
         >
-          Essential Links
+          Navigation
         </q-item-label>
 
         <EssentialLink
@@ -37,13 +45,19 @@
           v-bind="link"
         />
       </q-list>
+      <q-btn flat icon="logout" color="red" label="Exit" class="logout"/>
+
     </q-drawer>
 
-    <q-page-container>
+    <q-page-container class="page">
       <router-view />
     </q-page-container>
   </q-layout>
 </template>
+
+
+
+
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
@@ -51,58 +65,31 @@ import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue'
 
 const linksList: EssentialLinkProps[] = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Shops',
+    icon: 'store',
+    link: '/'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'Busket',
+    icon: 'shopping_basket',
+    link: '/busket'
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
+    title: 'My Orders',
+    icon: 'bookmark_border',
+    link: '/orders'
   }
 ];
 
+
 export default defineComponent({
   name: 'MainLayout',
-
   components: {
     EssentialLink
   },
-
   setup () {
     const leftDrawerOpen = ref(false);
+
 
     return {
       linksList,
@@ -114,3 +101,19 @@ export default defineComponent({
   }
 });
 </script>
+
+<style lang="scss">
+.page {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logout {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
+</style>
