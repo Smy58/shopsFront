@@ -1,23 +1,33 @@
 <template>
     <q-card class="order-card">
         <q-card-section class="order-card__content">
+            <p :class="`order-card__status ${statusStyle}`">{{ item.status.name }}</p>
             <div class="order-card__img"></div>
             <div class="order-card__info">
-                <h5 class="order-card__title">{{ 'Order ID: ' +  item.id + '. ' + shop.name }}</h5>
+                <div class="order-card__describe">
+                    <h5 class="order-card__title">{{ 'Order ID: ' +  item.id + '. ' + shop.name }}</h5>
 
-                <q-list  bordered padding class="rounded-borders order-card__product-list">
-                    <q-item v-for="el in products"
-                        :key="el.id"
-                        clickable v-ripple class="product-item"
-                    >
-                        <q-item-section>
-                            <p class="product-item__name">{{ el.product.name }}</p>
-                            <p class="product-item__text">Count: {{ el.count }}</p>
-                            <p class="product-item__text">Cost: {{ el.cost }}</p>
-                            <p class="product-item__cost">Total Cost: {{ el.count * el.cost }}</p>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
+                    <q-expansion-item style="max-width: 350px; "
+                        v-model="visible"
+                        @click="onclick"
+                        label="Show more information"
+                        >
+                        <q-list  bordered padding class="rounded-borders order-card__product-list">
+                            <q-skeleton v-if="loading" :type="type" />
+                            <q-item v-for="el in products"
+                                :key="el.id"
+                                clickable v-ripple class="product-item"
+                            >
+                                <q-item-section>
+                                    <p class="product-item__name">{{ el.position.product.name }}</p>
+                                    <p class="product-item__text">Count: {{ el.count }}</p>
+                                    <p class="product-item__text">Cost: {{ el.position.cost }}</p>
+                                    <p class="product-item__cost">Total Cost: {{ el.count * el.position.cost }}</p>
+                                </q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-expansion-item>
+                </div>
 
                 <p class="text-h5 order-card__cost">Order Total Cost: {{item.totalCost}}</p>
             </div>
@@ -28,60 +38,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { OrderClass, OrderInterface } from 'src/types/order'
-
-const productsMock = [
-{
-        "id": 1,
-        "shopId": 2,
-        "cost": 384,
-        "count": 1,
-        "product": {
-            "id": 5,
-            "name": "dog food",
-            "description": "-",
-            "vendorCost": 247,
-            "image": "img link",
-            "group": {
-                "id": 4,
-                "name": "Pet food"
-            }
-        }
-    },
-    {
-        "id": 2,
-        "shopId": 2,
-        "cost": 421,
-        "count": 1,
-        "product": {
-            "id": 6,
-            "name": "pet care",
-            "description": "-",
-            "vendorCost": 251,
-            "image": "img link",
-            "group": {
-                "id": 4,
-                "name": "Pet food"
-            }
-        }
-    },
-    {
-        "id": 3,
-        "shopId": 2,
-        "cost": 516,
-        "count": 1,
-        "product": {
-            "id": 7,
-            "name": "cat food",
-            "description": "-",
-            "vendorCost": 219,
-            "image": "img link",
-            "group": {
-                "id": 4,
-                "name": "Pet food"
-            }
-        }
-    },
-]
+import { getOrderPositions } from 'src/api/orders'
 
 
 export default defineComponent({
@@ -89,7 +46,35 @@ export default defineComponent({
     props: {
         item: {
             type: Object as () => OrderClass,
-            required: true
+            required: true,
+        }
+    },
+    computed: {
+        statusStyle() {
+            if (this.item.status.id == 1) {
+                return 'order-card__status_green'
+            }
+            if (this.item.status.id == 3) {
+                return 'order-card__status_yellow'
+            }
+
+            return ''
+        }
+    },
+    methods: {
+        async onclick() {
+            if (this.products.length == 0) {
+                console.log(this.item.id);
+                this.loading = true
+
+                getOrderPositions(this.item.id)
+                    .then((res) => {
+                        console.log(res);
+                        this.products = res
+                        this.loading = false
+                    })
+            }
+
         }
     },
     data(){
@@ -98,7 +83,9 @@ export default defineComponent({
             status: this.item.status,
             delivery: this.item.delivery,
             client: this.item.client,
-            products: productsMock
+            products: [],
+            visible: false,
+            loading: false
         }
     },
 })
@@ -123,19 +110,44 @@ export default defineComponent({
 
     }
 
+    &__status {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        font-size: 16px;
+
+        &_green {
+            font-weight: bolder;
+            color: #26A69A;
+        }
+
+        &_yellow {
+            color: #F2C037
+        }
+    }
+
     &__info {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+    &__describe {
         display: flex;
         flex-direction: column;
         width: 100%;
     }
 
     &__title {
-        margin-bottom: 20px;
+        margin-bottom: 5px;
     }
 
     &__product-list {
         width: 100%;
         margin-bottom: 15px;
+        padding: 10px;
     }
 
     &__cost {

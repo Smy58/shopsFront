@@ -3,6 +3,12 @@
   "compilerOptions": {
     "baseUrl": "."
   },
+  "include": [
+    "./.nuxt/nuxt.d.ts",
+    "**/*",
+    "modules/**/*.vue",
+    "modules/**/*.ts",
+  ],
   "exclude": [
     "./dist",
     "./.quasar",

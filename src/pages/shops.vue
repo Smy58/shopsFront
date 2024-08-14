@@ -3,7 +3,7 @@
         <h4 class="text-h4 shops__title">Shops</h4>
         <div class="shops__content">
             <div class="shops__list">
-                <ShopCard v-for="item in shopsMock" :key="item.id" :item="item" />
+                <ShopCard v-for="item in shopsData" :key="item.id" :item="item" />
             </div>
         </div>
     </div>
@@ -11,39 +11,29 @@
 
 <script lang="ts">
 import ShopCard from 'components/shops/Card.vue'
+import { getShops } from 'src/api/shops'
+import { useShops } from 'src/stores/shops'
 import { ShopInterface } from 'src/types/shop'
 import { defineComponent } from 'vue'
 
-const shopsMock: ShopInterface[] = [
-    {
-        id: 2,
-        name: "Second Shop",
-        address: "Tole bi 112",
-        workTimeStart: "12:00",
-        workTimeEnd: "18:00",
-        waitingTime: 30,
-        image: "https://content.jdmagicbox.com/comp/alwar/t2/9999px144.x144.190825233053.l1t2/catalogue/smart-mart-janaksinghpura-alwar-grocery-stores-uy6h6t2q2e.jpg"
-    },
-    {
-        id: 4,
-        name: "first Shop",
-        address: "Tole bi 112",
-        workTimeStart: "09:00",
-        workTimeEnd: "18:00",
-        waitingTime: 30,
-        image: ""
-    }
-]
 
 export default defineComponent({
     components: {
         ShopCard
     },
-    setup() {
+    data() {
         return {
-            shopsMock
+            shopsData: [] as ShopInterface[]
         }
     },
+    async beforeMount() {
+        await getShops()
+            .then((res) => {
+                useShops().setShops(res)
+            })
+
+        this.shopsData = useShops().getShops
+    }
 })
 </script>
 

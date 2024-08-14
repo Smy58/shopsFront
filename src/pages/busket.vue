@@ -10,29 +10,30 @@
                     <p class="text-h5">Busket empty</p>
                     <q-icon name="production_quantity_limits" color="grey" size="xl"></q-icon>
                 </div>
+
+                <q-dialog v-model="dialog" backdrop-filter="blur(4px)">
+                    <q-card style="width: 320px">
+                        <q-card-section class="row items-center q-pb-none text-h6">
+                            Sent
+                        </q-card-section>
+
+                        <q-card-section>
+                            Your order on processing.
+                        </q-card-section>
+
+                        <q-card-actions align="right">
+                            <q-btn flat label="Close" color="primary" v-close-popup />
+                        </q-card-actions>
+                    </q-card>
+                </q-dialog>
             </div>
 
-            <q-card class="busket-confirm">
-                <q-card-section class="busket-confirm__content">
-                    <h5 class="busket-confirm__title">Your Busket</h5>
-                    <div class="busket-confirm__field">
-                        <p class="busket-confirm__text">Products count:</p>
-                        <p class="busket-confirm__value">{{ totalCount + ' pcs' }}</p>
-                    </div>
-
-                    <div class="busket-confirm__field">
-                        <p class="busket-confirm__text_b">Busket cost:</p>
-                        <p class="busket-confirm__value_b">{{ costString(totalSum) }}</p>
-                    </div>
-
-
-                </q-card-section>
-                <q-card-section>
-                    <q-btn color="primary" :disable="busket.length === 0" label="Confirm" class="busket-confirm__btn" @click="onMainClick"/>
-
-                </q-card-section>
-
-            </q-card>
+            <BusketConfirm
+                :totalSum="totalSum"
+                :totalCount="totalCount"
+                :handleBtn="handleBtn"
+                :isDis="busket.length === 0 || isLoading"
+            />
         </div>
 
 
@@ -44,14 +45,19 @@ import { useBusket } from 'src/stores/busket'
 import { ProductInterface } from 'src/types/product'
 import { defineComponent } from 'vue'
 import BusketItem from 'components/busket/Item.vue'
+import BusketConfirm from 'components/busket/Confirm.vue'
+import { addOrder } from 'src/api/orders'
 
 export default defineComponent({
     components: {
-        BusketItem
+        BusketItem,
+        BusketConfirm
     },
     data() {
         return {
-            busket: [] as ProductInterface[]
+            busket: [] as ProductInterface[],
+            isLoading: false,
+            dialog: false
         }
     },
     beforeMount() {
@@ -84,9 +90,20 @@ export default defineComponent({
         }
     },
     methods: {
-        costString (cost: number) {
-			return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₸'
-		},
+        async handleBtn () {
+            console.log(this.busket);
+
+            this.isLoading = true
+            await addOrder(this.busket, this.totalSum)
+                .then((res) => {
+                    console.log(res);
+                    useBusket().clearBusket()
+                    this.busket = []
+                    this.isLoading = false
+                    this.dialog = true
+
+                })
+        }
     },
 })
 </script>
@@ -130,37 +147,6 @@ export default defineComponent({
     }
 }
 
-.busket-confirm {
-    min-width: 240px;
-    max-height: 230px;
 
-    display: flex;
-    flex-direction: column;
-
-    justify-content: space-between;
-
-    &__title {
-        margin-bottom: 15px;
-    }
-
-    &__field {
-        margin-bottom: 7px;
-
-        display: flex;
-        justify-content: space-between;
-    }
-
-    &__text, &__value {
-        font-size: 14px;
-
-        &_b {
-            font-weight: bolder;
-        }
-    }
-
-    &__btn {
-        width: 100%;
-    }
-}
 
 </style>

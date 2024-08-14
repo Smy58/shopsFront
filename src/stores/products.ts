@@ -9,6 +9,7 @@ export const useProducts = defineStore('products', {
   }),
   getters: {
     getCurProduct: (state) => state.curProduct,
+    getProducts: (state) => state.products
   },
   actions: {
     setCurProduct(item: ProductInterface) {
@@ -17,6 +18,9 @@ export const useProducts = defineStore('products', {
 
         localStorage.setItem("product", JSON.stringify(this.curProduct))
 
+    },
+    setProducts (items: ProductInterface[]) {
+        this.products = items
     },
     setFromLocal() {
         const pr = localStorage.getItem("product");

@@ -54,6 +54,10 @@ export const useBusket = defineStore('busket', {
             const oldBusket = JSON.parse(bs)
             this.setBusket(oldBusket)
         }
+    },
+    clearBusket() {
+        this.busket = []
+        localStorage.removeItem("busket")
     }
   },
 });

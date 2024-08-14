@@ -9,13 +9,17 @@ export const useShops = defineStore('shops', {
   }),
   getters: {
     getCurShop: (state) => state.curShop,
+    getShops: (state) => state.shops
   },
   actions: {
     setCurShop(item: ShopInterface) {
       this.curShop = item;
-      console.log(item);
 
       localStorage.setItem("shop", JSON.stringify(this.curShop))
+    },
+    setShops(items: ShopInterface[]) {
+        this.shops = items
+
     },
     setFromLocal() {
         const sh = localStorage.getItem("shop");
