@@ -70,7 +70,7 @@
 
 
                 <q-btn label="Sign up" type="submit" color="primary" class="form__btn"/>
-                <p class="form__link">Already have an account? <router-link to="/signup">Log in</router-link></p>
+                <p class="form__link">Already have an account? <router-link to="/login">Log in</router-link></p>
             </q-form>
         </div>
 

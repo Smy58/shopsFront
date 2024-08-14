@@ -19,8 +19,8 @@
             <q-chip
             color="primary" text-color="white"
             >
-                <q-avatar color="white" text-color="primary">J</q-avatar>
-                Jasmin P.
+                <q-avatar color="white" text-color="primary">{{ this.userName[0] }}</q-avatar>
+                {{this.userName}}
             </q-chip>
         </router-link>
 
@@ -45,7 +45,7 @@
           v-bind="link"
         />
       </q-list>
-      <q-btn flat icon="logout" color="red" label="Exit" class="logout"/>
+      <q-btn flat icon="logout" color="red" label="Exit" class="logout" @click="logout"/>
 
     </q-drawer>
 
@@ -61,6 +61,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue';
+import { useUsers } from 'stores/user'
 import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue';
 
 const linksList: EssentialLinkProps[] = [
@@ -86,6 +87,23 @@ export default defineComponent({
   name: 'MainLayout',
   components: {
     EssentialLink
+  },
+  methods: {
+    logout() {
+        useUsers().clearUser()
+        this.$router.push('/login')
+    }
+  },
+  data() {
+    return {
+        userName: ''
+    }
+  },
+  beforeMount() {
+    useUsers().setFromLocal()
+
+    const name = useUsers().getUserName
+    this.userName =  name ? name : ''
   },
   setup () {
     const leftDrawerOpen = ref(false);
