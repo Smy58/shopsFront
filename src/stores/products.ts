@@ -14,7 +14,6 @@ export const useProducts = defineStore('products', {
   actions: {
     setCurProduct(item: ProductInterface) {
         this.curProduct = item;
-        console.log(item);
 
         localStorage.setItem("product", JSON.stringify(this.curProduct))
 

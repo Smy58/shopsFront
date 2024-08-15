@@ -108,7 +108,6 @@ export default defineComponent({
   },
   data() {
     return {
-        // userName: '',
         dialog: false ,
         dialogMes: ''
     }
@@ -126,10 +125,6 @@ export default defineComponent({
     this.dialogMes = cont ? cont : ''
     this.dialog = cont ? true : false
 
-    // useUsers().setFromLocal()
-
-    // const name = useUsers().getUserName
-    // this.userName =  name ? name : ''
   },
   setup () {
     const leftDrawerOpen = ref(false);

@@ -1,6 +1,6 @@
 <template>
     <div class="shop-page">
-        <h4 class="text-h4 shop-page__title">{{ shopData.name }}</h4>
+        <h4 class="text-h4 shop-page__title">{{ shopData?.name }}</h4>
 
         <div class="shop-page__content">
             <ShopFilter :groupsData="groupsData" :onFind="onFind" />

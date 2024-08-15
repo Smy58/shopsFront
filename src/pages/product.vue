@@ -17,13 +17,14 @@ export default defineComponent({
     components: {
         Product
     },
-
     beforeMount() {
         useBusket().setFromLocal()
         useProducts().setFromLocal();
 
         const curProduct = useProducts().getCurProduct
-        this.productData = curProduct
+        if (curProduct){
+            this.productData = curProduct
+        }
 
         const busketData = useBusket().getBusket
 
@@ -35,7 +36,7 @@ export default defineComponent({
     },
     data() {
         return {
-            productData: {} as ProductInterface | null,
+            productData: {} as ProductInterface,
             isInBusket: false
         }
     },

@@ -118,24 +118,19 @@ export default defineComponent({
 
                 signupUser(params)
                     .then((res) => {
-                        console.log(res);
                         if (!res.message) {
                             useUsers().setCurUser(res)
                             localStorage.setItem("dialogMes", "Successful creating user, logged in")
                             this.$router.push('/')
                         } else {
-                            console.log('ERROR');
                             this.errorMessage = res.message
                         }
 
                     })
                     .catch((err) => {
-                        console.log(err);
-
+                        this.errorMessage = err.message
                     })
             } else {
-                console.log('Error');
-
                 this.errorMessage = "Passwords must be identical"
             }
 

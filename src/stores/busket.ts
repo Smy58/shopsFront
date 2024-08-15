@@ -15,8 +15,6 @@ export const useBusket = defineStore('busket', {
     addItemBusket(item: ProductInterface) {
         this.busket.push(item);
 
-        console.log(this.busket);
-
         localStorage.setItem("busket", JSON.stringify(this.busket))
     },
     delItemBusket(id: number) {
@@ -45,7 +43,6 @@ export const useBusket = defineStore('busket', {
 	},
     setBusket(items: ProductInterface[]) {
         this.busket = items
-        console.log(this.busket);
 
     },
     setFromLocal() {

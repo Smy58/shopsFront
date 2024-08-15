@@ -4,7 +4,6 @@ const url = 'http://localhost:5000'
 
 const getOrders = async (clientId: number) => {
     const data = new URLSearchParams();
-    console.log(clientId);
 
     data.append('clientId', (clientId + ''))
 
@@ -28,7 +27,6 @@ const getOrderPositions = async (orderId: Number) => {
 }
 
 const addOrder = async (shopProducts: ProductInterface[], totalSum: number, clientId: number) => {
-    // console.log(products);
 
     const positions = shopProducts.map((item) => {
         return {

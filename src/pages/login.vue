@@ -68,19 +68,17 @@ export default defineComponent({
         async onLogin() {
             loginUser({login: this.login, password: this.password})
                 .then((res) => {
-                    console.log(res);
                     if (!res.message) {
                         useUsers().setCurUser(res)
                         localStorage.setItem("dialogMes", "Successful login")
                         this.$router.push('/')
                     } else {
-                        console.log('ERROR');
                         this.errorMessage = res.message
                     }
 
                 })
                 .catch((err) => {
-                    console.log(err);
+                    this.errorMessage = err.message
 
                 })
         }

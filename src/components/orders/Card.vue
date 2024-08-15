@@ -39,7 +39,6 @@
 import { defineComponent } from 'vue'
 import { OrderClass, OrderInterface, OrderPositionInterface } from 'src/types/order'
 import { getOrderPositions } from 'src/api/orders'
-import { ProductInterface } from 'src/types/product';
 
 
 export default defineComponent({
@@ -65,12 +64,10 @@ export default defineComponent({
     methods: {
         async onclick() {
             if (this.products.length == 0) {
-                console.log(this.item.id);
                 this.loading = true
 
                 getOrderPositions(this.item.id)
                     .then((res) => {
-                        console.log(res);
                         this.products = res
                         this.loading = false
                     })

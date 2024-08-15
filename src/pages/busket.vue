@@ -92,7 +92,6 @@ export default defineComponent({
     },
     methods: {
         async handleBtn () {
-            // console.log(this.busket);
 
             const user = useUsers().getCurUser
             const userId = user ? user.id : 0
@@ -100,7 +99,6 @@ export default defineComponent({
             this.isLoading = true
             await addOrder(this.busket, this.totalSum, userId)
                 .then((res) => {
-                    console.log(res);
                     useBusket().clearBusket()
                     this.busket = []
                     this.isLoading = false
