@@ -4,7 +4,7 @@
 
         <div class="orders-page__content">
             <div class="orders">
-                <OrderCard v-for="item in ordersData" :key="item.id" :item="item" />
+                <OrderCard v-for="item in ordersData" :key="item.id" :item="item"/>
             </div>
         </div>
     </div>
@@ -16,6 +16,7 @@ import OrderCard from 'components/orders/Card.vue'
 import { getOrders } from 'src/api/orders'
 import { useOrders } from 'src/stores/orders'
 import { OrderInterface } from 'src/types/order'
+import { useUsers } from 'src/stores/user'
 
 export default defineComponent({
     components: {
@@ -27,12 +28,17 @@ export default defineComponent({
         }
     },
     async beforeMount() {
-        await getOrders()
+        const user = useUsers().getCurUser
+
+        if (user) {
+            await getOrders(user.id)
             .then((res) => {
                 useOrders().setOrders(res)
             })
 
-        this.ordersData = useOrders().getOrders
+            this.ordersData = useOrders().getOrders
+        }
+
     }
 })
 </script>

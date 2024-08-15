@@ -33,5 +33,18 @@ export default route(function (/* { store, ssrContext } */) {
     ),
   });
 
+  Router.beforeEach( (to, from) => {
+    const isAuthenticated = localStorage.getItem("user")
+    if (
+      // make sure the user is authenticated
+      !isAuthenticated &&
+      // ❗️ Avoid an infinite redirect
+      to.name !== 'login' && to.name !== 'signup'
+    ) {
+      // redirect the user to the login page
+      return { name: 'login' }
+    }
+  })
+
   return Router;
 });

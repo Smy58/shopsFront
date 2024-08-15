@@ -2,7 +2,7 @@
     <q-card class="busket-item">
         <q-btn round color="red" icon="delete" class="busket-item__remove" size="sm" @click="removeFromBusket"/>
         <q-card-section class="busket-item__content">
-            <div class="busket-item__img">
+            <div class="busket-item__img" :style="{ backgroundImage: 'url(' + product.image + ')' }">
 
             </div>
             <div class="busket-item__info">
@@ -111,6 +111,10 @@ export default defineComponent({
         height: 150px;
 
         background: rgb(244, 244, 244);
+
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
 
     }
 

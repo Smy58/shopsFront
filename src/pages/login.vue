@@ -2,7 +2,7 @@
     <div class="login-page">
         <div class="login">
             <q-form
-                @submit="onSubmit"
+                @submit="onLogin"
                 class="login-form form q-pa-md"
             >
                 <q-input
@@ -12,20 +12,28 @@
                     hint="Login mail or phone"
                     class="form__input"
                     lazy-rules
-                    :rules="[ val => val && val.length > 0 || 'Please type something']"
+                    :rules="loginRules"
                 />
 
                 <q-input
                     filled
                     v-model="password"
-                    type="password"
+                    :type="isPwd ? 'password' : 'text'"
                     label="Your password"
                     class="form__input"
                     lazy-rules
-                    :rules="[ val => val && val.length > 5 || 'Please type something']"
-                />
+                    :rules="passwordRules"
+                >
+                    <template v-slot:append>
+                    <q-icon
+                        :name="isPwd ? 'visibility_off' : 'visibility'"
+                        class="cursor-pointer"
+                        @click="isPwd = !isPwd"
+                    />
+                    </template>
+                </q-input>
 
-                <q-btn label="Login" type="submit" color="primary" class="form__btn" @click.prevent="onLogin"/>
+                <q-btn label="Login" type="submit" color="primary" class="form__btn" />
                 <p class="form__error" v-if="errorMessage">{{ errorMessage }}</p>
                 <p class="form__link">Don’t have an account? <router-link to="/signup">Sign Up</router-link></p>
             </q-form>
@@ -44,7 +52,8 @@ export default defineComponent({
         return {
             login: '',
             password: '',
-            errorMessage: ''
+            errorMessage: '',
+            isPwd: true
         }
     },
     beforeMount() {
@@ -62,6 +71,7 @@ export default defineComponent({
                     console.log(res);
                     if (!res.message) {
                         useUsers().setCurUser(res)
+                        localStorage.setItem("dialogMes", "Successful login")
                         this.$router.push('/')
                     } else {
                         console.log('ERROR');
@@ -73,6 +83,18 @@ export default defineComponent({
                     console.log(err);
 
                 })
+        }
+    },
+    setup() {
+        const loginRules = [
+            (val: string) => val && val.length > 0 || 'It can not be empty',
+            (val: string) => (/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$|^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(val)) || "It's not email or phone",
+        ]
+
+        const passwordRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
+
+        return {
+            loginRules, passwordRules
         }
     }
 })

@@ -19,15 +19,15 @@
             <q-chip
             color="primary" text-color="white"
             >
-                <q-avatar color="white" text-color="primary">{{ this.userName[0] }}</q-avatar>
-                {{this.userName}}
+                <q-avatar color="white" text-color="primary">{{ userName[0] }}</q-avatar>
+                {{userName}}
             </q-chip>
         </router-link>
 
       </q-toolbar>
     </q-header>
 
-    <q-drawer width="190"
+    <q-drawer :width="190"
       v-model="leftDrawerOpen"
       show-if-above
       bordered
@@ -49,8 +49,17 @@
 
     </q-drawer>
 
+
+
     <q-page-container class="page">
-      <router-view />
+        <router-view />
+
+        <q-dialog v-model="dialog" seamless position="top" class="page__dialog">
+            <q-card class="page__dialog-card">
+                <p class="text-subtitle1">{{ dialogMes }}</p>
+                <q-btn icon="close" flat round dense v-close-popup class="page__dialog-close" @click="closeDialog" />
+            </q-card>
+        </q-dialog>
     </q-page-container>
   </q-layout>
 </template>
@@ -92,18 +101,35 @@ export default defineComponent({
     logout() {
         useUsers().clearUser()
         this.$router.push('/login')
+    },
+    closeDialog() {
+        localStorage.removeItem("dialogMes")
     }
   },
   data() {
     return {
-        userName: ''
+        // userName: '',
+        dialog: false ,
+        dialogMes: ''
+    }
+  },
+  computed: {
+    userName() {
+        useUsers().setFromLocal()
+
+        const name = useUsers().getUserName
+        return name
     }
   },
   beforeMount() {
-    useUsers().setFromLocal()
+    const cont = localStorage.getItem("dialogMes")
+    this.dialogMes = cont ? cont : ''
+    this.dialog = cont ? true : false
 
-    const name = useUsers().getUserName
-    this.userName =  name ? name : ''
+    // useUsers().setFromLocal()
+
+    // const name = useUsers().getUserName
+    // this.userName =  name ? name : ''
   },
   setup () {
     const leftDrawerOpen = ref(false);
@@ -126,6 +152,20 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    &__dialog {
+
+        &-card {
+            width: 350px;
+            padding: 20px;
+        }
+
+        &-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    }
 }
 
 .logout {

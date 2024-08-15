@@ -47,6 +47,7 @@ import { defineComponent } from 'vue'
 import BusketItem from 'components/busket/Item.vue'
 import BusketConfirm from 'components/busket/Confirm.vue'
 import { addOrder } from 'src/api/orders'
+import { useUsers } from 'src/stores/user'
 
 export default defineComponent({
     components: {
@@ -91,10 +92,13 @@ export default defineComponent({
     },
     methods: {
         async handleBtn () {
-            console.log(this.busket);
+            // console.log(this.busket);
+
+            const user = useUsers().getCurUser
+            const userId = user ? user.id : 0
 
             this.isLoading = true
-            await addOrder(this.busket, this.totalSum)
+            await addOrder(this.busket, this.totalSum, userId)
                 .then((res) => {
                     console.log(res);
                     useBusket().clearBusket()

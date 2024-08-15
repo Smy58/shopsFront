@@ -2,9 +2,11 @@ import { ProductInterface } from "src/types/product"
 
 const url = 'http://localhost:5000'
 
-const getOrders = async () => {
+const getOrders = async (clientId: number) => {
     const data = new URLSearchParams();
-    data.append('clientId', (1 + ''))
+    console.log(clientId);
+
+    data.append('clientId', (clientId + ''))
 
     return await fetch(`${url}/orders` + `?${data.toString()}`, {
         method: 'GET',
@@ -25,7 +27,7 @@ const getOrderPositions = async (orderId: Number) => {
         .then((res) => res.json())
 }
 
-const addOrder = async (shopProducts: ProductInterface[], totalSum: number) => {
+const addOrder = async (shopProducts: ProductInterface[], totalSum: number, clientId: number) => {
     // console.log(products);
 
     const positions = shopProducts.map((item) => {
@@ -43,7 +45,7 @@ const addOrder = async (shopProducts: ProductInterface[], totalSum: number) => {
         shopId: shopId,
         statusId: 2,
         deliveryId: Math.floor(Math.random() * 5),
-        clientId: 1,
+        clientId: clientId,
         positions: positions
     }
 

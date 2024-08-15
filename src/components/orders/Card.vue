@@ -2,7 +2,7 @@
     <q-card class="order-card">
         <q-card-section class="order-card__content">
             <p :class="`order-card__status ${statusStyle}`">{{ item.status.name }}</p>
-            <div class="order-card__img"></div>
+            <div class="order-card__img" :style="{ backgroundImage: 'url(' + shop.image + ')' }"></div>
             <div class="order-card__info">
                 <div class="order-card__describe">
                     <h5 class="order-card__title">{{ 'Order ID: ' +  item.id + '. ' + shop.name }}</h5>
@@ -13,7 +13,7 @@
                         label="Show more information"
                         >
                         <q-list  bordered padding class="rounded-borders order-card__product-list">
-                            <q-skeleton v-if="loading" :type="type" />
+                            <q-skeleton v-if="loading" type="rect" />
                             <q-item v-for="el in products"
                                 :key="el.id"
                                 clickable v-ripple class="product-item"
@@ -37,8 +37,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { OrderClass, OrderInterface } from 'src/types/order'
+import { OrderClass, OrderInterface, OrderPositionInterface } from 'src/types/order'
 import { getOrderPositions } from 'src/api/orders'
+import { ProductInterface } from 'src/types/product';
 
 
 export default defineComponent({
@@ -83,7 +84,7 @@ export default defineComponent({
             status: this.item.status,
             delivery: this.item.delivery,
             client: this.item.client,
-            products: [],
+            products: [] as OrderPositionInterface[],
             visible: false,
             loading: false
         }
@@ -107,6 +108,10 @@ export default defineComponent({
         height: 170px;
 
         background: rgb(244, 244, 244);
+
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
 
     }
 

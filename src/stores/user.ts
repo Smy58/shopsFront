@@ -4,15 +4,17 @@ import { UserInterface } from 'src/types/user';
 export const useUsers = defineStore('users', {
   state: () => ({
     curUser: null as UserInterface | null,
+    curName: ''
 
   }),
   getters: {
     getCurUser: (state) => state.curUser,
-    getUserName: (state) => state.curUser?.name
+    getUserName: (state) => state.curName
   },
   actions: {
     setCurUser(item: UserInterface) {
       this.curUser = item;
+      this.curName = item.name;
 
       localStorage.setItem("user", JSON.stringify(this.curUser))
     },
@@ -25,6 +27,8 @@ export const useUsers = defineStore('users', {
     },
     clearUser() {
         localStorage.removeItem('user')
+        this.curUser = null
+        this.curName = ''
     }
   },
 });

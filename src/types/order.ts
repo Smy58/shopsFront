@@ -1,33 +1,35 @@
+import { ProductInterface } from "./product";
+
 export interface OrderInterface {
-    id: Number;
-    totalCost: Number;
+    id: number;
+    totalCost: number;
     shop: {
-        id: Number;
+        id: number;
         name: String;
         address: String;
         workTimeStart: String;
         workTimeEnd: String;
-        waitingTime: Number;
+        waitingTime: number;
         image: String;
     };
     status: {
-        id: Number;
+        id: number;
         name: String;
     };
     delivery: {
-        id: Number;
+        id: number;
         worker: {
-            id: Number;
+            id: number;
             name: String;
-            shopId: Number;
+            shopId: number;
             role: {
-                id: Number;
+                id: number;
                 name: String;
             }
         }
     };
     client: {
-        id: Number;
+        id: number;
         name: String;
         address: String;
         phone: String;
@@ -35,36 +37,43 @@ export interface OrderInterface {
     };
 }
 
+export interface OrderPositionInterface {
+    id: number;
+    orderId: number;
+    count: number;
+    position: ProductInterface;
+}
+
 export class OrderClass {
-    id: Number;
-    totalCost: Number;
+    id: number;
+    totalCost: number;
     shop: {
-        id: Number;
+        id: number;
         name: String;
         address: String;
         workTimeStart: String;
         workTimeEnd: String;
-        waitingTime: Number;
+        waitingTime: number;
         image: String;
     };
     status: {
-        id: Number;
+        id: number;
         name: String;
     };
     delivery: {
-        id: Number;
+        id: number;
         worker: {
-            id: Number;
+            id: number;
             name: String;
-            shopId: Number;
+            shopId: number;
             role: {
-                id: Number;
+                id: number;
                 name: String;
             }
         }
     };
     client: {
-        id: Number;
+        id: number;
         name: String;
         address: String;
         phone: String;

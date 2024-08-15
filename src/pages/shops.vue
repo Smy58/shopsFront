@@ -6,6 +6,7 @@
                 <ShopCard v-for="item in shopsData" :key="item.id" :item="item" />
             </div>
         </div>
+
     </div>
 </template>
 
@@ -23,17 +24,20 @@ export default defineComponent({
     },
     data() {
         return {
-            shopsData: [] as ShopInterface[]
+            shopsData: [] as ShopInterface[],
         }
     },
     async beforeMount() {
+
+
         await getShops()
             .then((res) => {
                 useShops().setShops(res)
             })
 
         this.shopsData = useShops().getShops
-    }
+    },
+
 })
 </script>
 
@@ -54,6 +58,8 @@ export default defineComponent({
         flex-direction: column;
         gap: 20px;
     }
+
+
 }
 
 
