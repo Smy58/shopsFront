@@ -30,17 +30,11 @@
 <script lang="ts">
 import { useBusket } from 'src/stores/busket'
 import { ProductClass, ProductInterface } from 'src/types/product'
-import { defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 
 
 export default defineComponent({
     name: "Product",
-    data() {
-        return {
-            count: this.data.count ? this.data.count : 1,
-            isInBusket: this.inBusket
-        }
-    },
     props: {
         data: {
             type: Object as () => ProductClass,
@@ -51,65 +45,80 @@ export default defineComponent({
             required: true
         }
     },
-    methods: {
-        plusCount() {
-            if (this.isNotBigCount) {
-                this.count++
+    setup(props) {
+        const { data, inBusket } = props
+
+        const count = ref(data.count ? data.count : 1);
+        const isInBusket = ref(inBusket)
+
+        const isNotSmallCount = computed(() => {
+            if (count.value > 1) {
+                return true
             }
-        },
-        minusCount() {
-            if (this.isNotSmallCount) {
-                this.count--
+            return false
+        })
+        const isNotBigCount = computed(() => {
+            if (count.value < 20) {
+                return true
             }
-        },
-        costString (cost: number) {
+            return false
+        })
+
+
+        function plusCount() {
+            if (isNotBigCount) {
+                count.value++
+            }
+        }
+        function minusCount() {
+            if (isNotSmallCount) {
+                count.value--
+            }
+        }
+        function costString (cost: number) {
 			return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₸'
-		},
-        onMainClick() {
-            if (this.isInBusket) {
-                this.changeItemInBusket()
+		}
+        function onMainClick() {
+            if (isInBusket.value) {
+                changeItemInBusket()
             } else {
-                this.addToBusket()
+                addToBusket()
             }
-        },
-        addToBusket() {
-            const newItem: ProductInterface = this.data;
-            newItem.count = this.count;
+        }
+        function addToBusket() {
+            const newItem: ProductInterface = data;
+            newItem.count = count.value;
 
             useBusket().addItemBusket(newItem);
 
-            this.isInBusket = true
-        },
-        changeItemInBusket() {
-            const newItem: ProductInterface = this.data;
-            newItem.count = this.count;
+            isInBusket.value = true
+        }
+        function changeItemInBusket() {
+            const newItem: ProductInterface = data;
+            newItem.count = count.value;
 
             useBusket().changeCount(newItem);
-        },
-        removeFromBusket() {
-            useBusket().delItemBusket(this.data.id)
-
-            this.isInBusket = false
         }
-    },
-    computed: {
-        isNotSmallCount() {
-            if (this.count > 1) {
-                return true
-            }
-            return false
-        },
-        isNotBigCount() {
-            if (this.count < 20) {
-                return true
-            }
-            return false
-        },
-    },
-    setup(props) {
+        function removeFromBusket() {
+            useBusket().delItemBusket(data.id)
+
+            isInBusket.value = false
+        }
+
+
         return {
-            data: props.data,
-            product: props.data?.product
+            product: props.data?.product,
+            count,
+            isInBusket,
+            isNotSmallCount,
+            isNotBigCount,
+            plusCount,
+            minusCount,
+            costString,
+            onMainClick,
+            addToBusket,
+            changeItemInBusket,
+            removeFromBusket
         }
     },
 })

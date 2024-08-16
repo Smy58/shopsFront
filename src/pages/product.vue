@@ -6,43 +6,50 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onBeforeMount, ref } from 'vue'
 import Product from 'components/product/Product.vue'
 import { useProducts } from 'src/stores/products';
 import { useBusket } from 'src/stores/busket';
 import { ProductInterface } from 'src/types/product';
+import { useRouter } from 'vue-router';
 
 
 export default defineComponent({
     components: {
         Product
     },
-    beforeMount() {
-        useBusket().setFromLocal()
-        useProducts().setFromLocal();
+    setup() {
+        const productData = ref({} as ProductInterface);
+        const isInBusket = ref(false);
 
-        const curProduct = useProducts().getCurProduct
-        if (curProduct){
-            this.productData = curProduct
+        const router = useRouter()
+
+        function goBack() {
+            router.go(-1)
         }
 
-        const busketData = useBusket().getBusket
+        onBeforeMount(() => {
+            useBusket().setFromLocal()
+            useProducts().setFromLocal();
 
-        const itemInBusket = busketData.find(e => e.id === curProduct?.id)
-        if (itemInBusket) {
-            this.isInBusket = true
-            this.productData = itemInBusket
-        }
-    },
-    data() {
+            const curProduct = useProducts().getCurProduct
+            if (curProduct){
+                productData.value = curProduct
+            }
+
+            const busketData = useBusket().getBusket
+
+            const itemInBusket = busketData.find(e => e.id === curProduct?.id)
+            if (itemInBusket) {
+                isInBusket.value = true
+                productData.value = itemInBusket
+            }
+        })
+
         return {
-            productData: {} as ProductInterface,
-            isInBusket: false
-        }
-    },
-    methods: {
-        goBack() {
-            this.$router.go(-1)
+            productData,
+            isInBusket,
+            goBack
         }
     }
 })

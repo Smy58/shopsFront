@@ -12,32 +12,33 @@
 
 <script lang="ts">
 import ShopCard from 'components/shops/Card.vue'
-import { getShops } from 'src/api/shops'
 import { useShops } from 'src/stores/shops'
 import { ShopInterface } from 'src/types/shop'
-import { defineComponent } from 'vue'
-
+import { defineComponent, onBeforeMount, ref } from 'vue'
+import { getShops } from 'src/boot/shops'
 
 export default defineComponent({
     components: {
         ShopCard
     },
-    data() {
+    setup() {
+        const shopsData = ref([] as ShopInterface[])
+
+        onBeforeMount( async () => {
+
+            await getShops()
+                .then((res) => {
+                    useShops().setShops(res)
+                })
+
+
+            shopsData.value = useShops().getShops
+        })
+
         return {
-            shopsData: [] as ShopInterface[],
+            shopsData
         }
     },
-    async beforeMount() {
-
-
-        await getShops()
-            .then((res) => {
-                useShops().setShops(res)
-            })
-
-        this.shopsData = useShops().getShops
-    },
-
 })
 </script>
 

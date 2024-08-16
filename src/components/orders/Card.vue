@@ -36,9 +36,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { OrderClass, OrderInterface, OrderPositionInterface } from 'src/types/order'
-import { getOrderPositions } from 'src/api/orders'
+import { getOrderPositions } from 'boot/orders'
 
 
 export default defineComponent({
@@ -49,43 +49,52 @@ export default defineComponent({
             required: true,
         }
     },
-    computed: {
-        statusStyle() {
-            if (this.item.status.id == 1) {
+    setup(props) {
+        const { item } = props
+
+        const shop = ref(item.shop);
+        const status = ref(item.status);
+        const delivery = ref(item.delivery);
+        const client = ref(item.client);
+        const products = ref([] as OrderPositionInterface[]);
+        const visible = ref(false);
+        const loading = ref(false);
+
+        const statusStyle = computed(() => {
+            if (item.status.id == 1) {
                 return 'order-card__status_green'
             }
-            if (this.item.status.id == 3) {
+            if (item.status.id == 3) {
                 return 'order-card__status_yellow'
             }
 
             return ''
-        }
-    },
-    methods: {
-        async onclick() {
-            if (this.products.length == 0) {
-                this.loading = true
+        })
 
-                getOrderPositions(this.item.id)
+        async function onclick() {
+            if (products.value.length == 0) {
+                loading.value = true
+
+                getOrderPositions(item.id)
                     .then((res) => {
-                        this.products = res
-                        this.loading = false
+                        products.value = res
+                        loading.value = false
                     })
             }
+        }
 
-        }
-    },
-    data(){
         return {
-            shop: this.item.shop,
-            status: this.item.status,
-            delivery: this.item.delivery,
-            client: this.item.client,
-            products: [] as OrderPositionInterface[],
-            visible: false,
-            loading: false
+            shop,
+            status,
+            delivery,
+            client,
+            products,
+            visible,
+            loading,
+            statusStyle,
+            onclick
         }
-    },
+    }
 })
 </script>
 

@@ -79,41 +79,44 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { signupUser } from 'src/api/user'
+import { defineComponent, onBeforeMount, ref } from 'vue'
+import { signupUser } from 'boot/user'
 import { useUsers } from 'stores/user'
 import { signupUserParams } from 'src/types/user';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
-    data() {
-        return {
-            mail: '',
-            password: '',
-            repPassword: '',
-            name: '',
-            address: '',
-            phone: '',
-            errorMessage: ''
-        }
-    },
-    beforeMount() {
-        useUsers().setFromLocal()
+    setup() {
+        const mailRules = [
+            (val: string) => val && val.length > 0 || 'Email can not be empty',
+            (val: string) => (/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(val)) || "It's not email",
+        ];
+        const phoneRules = [
+            (val: string) => val && val.length > 0 || 'Email can not be empty',
+            (val: string) => (/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/.test(val)) || "It's not phone",
+        ];
+        const passwordRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
+        const nameRules = [ (val: string) => val && val.length > 1 || 'Need more than 1 symbols']
+        const addressRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
 
-        const user = useUsers().getCurUser
-        if (user) {
-            this.$router.push('/')
-        }
-    },
-    methods: {
-        async onSignup() {
+        const mail = ref('');
+        const password = ref('');
+        const repPassword = ref('');
+        const name = ref('');
+        const address = ref('');
+        const phone = ref('');
+        const errorMessage = ref('');
 
-            if (this.password === this.repPassword) {
+        const router = useRouter()
+
+        async function onSignup() {
+            if (password.value === repPassword.value) {
                 const params: signupUserParams = {
-                    name: this.name,
-                    address: this.address,
-                    phone: this.phone,
-                    mail: this.mail,
-                    password: this.password,
+                    name: name.value,
+                    address: address.value,
+                    phone: phone.value,
+                    mail: mail.value,
+                    password: password.value,
                 }
 
                 signupUser(params)
@@ -121,40 +124,38 @@ export default defineComponent({
                         if (!res.message) {
                             useUsers().setCurUser(res)
                             localStorage.setItem("dialogMes", "Successful creating user, logged in")
-                            this.$router.push('/')
+                            router.push('/')
                         } else {
-                            this.errorMessage = res.message
+                            errorMessage.value = res.message
                         }
-
                     })
                     .catch((err) => {
-                        this.errorMessage = err.message
+                        errorMessage.value = err.message
                     })
             } else {
-                this.errorMessage = "Passwords must be identical"
+                errorMessage.value = "Passwords must be identical"
             }
-
         }
-    },
-    setup() {
 
-        const mailRules = [
-            (val: string) => val && val.length > 0 || 'Email can not be empty',
-            (val: string) => (/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(val)) || "It's not email",
-        ]
+        onBeforeMount(() => {
+            useUsers().setFromLocal()
 
-        const phoneRules = [
-            (val: string) => val && val.length > 0 || 'Email can not be empty',
-            (val: string) => (/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/.test(val)) || "It's not phone",
-        ]
-
-        const passwordRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
-        const nameRules = [ (val: string) => val && val.length > 1 || 'Need more than 1 symbols']
-        const addressRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
-
+            const user = useUsers().getCurUser
+            if (user) {
+                router.push('/')
+            }
+        })
 
         return {
-            mailRules, phoneRules, passwordRules, nameRules, addressRules
+            mailRules, phoneRules, passwordRules, nameRules, addressRules,
+            mail,
+            password,
+            repPassword,
+            name,
+            address,
+            phone,
+            errorMessage,
+            onSignup
         }
     }
 

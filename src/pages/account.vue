@@ -106,106 +106,12 @@
 </template>
 
 <script lang="ts">
-import { updateUserInfo, updateUserPassword } from 'src/api/user';
+import { updateUserInfo, updateUserPassword } from 'boot/user';
 import { useUsers } from 'src/stores/user';
 import { updateUserParams, updateUserPasswordParams } from 'src/types/user';
-import { defineComponent } from 'vue'
-
-const accMock = {
-    "id": 1,
-    "name": "Kostya",
-    "address": "Dostyk 111",
-    "phone": "+7 777 666 55 44",
-    "mail": ''
-}
+import { defineComponent, onBeforeMount, ref } from 'vue'
 
 export default defineComponent({
-    data() {
-        return {
-            name: '',
-            address: '',
-            phone: '',
-            mail: '',
-            oldPassword: '',
-            newPassword: '',
-            newPasswordRep: '',
-            userId: 0,
-            dialog: false,
-            dialogMes: '',
-            isLoading: false,
-            errorMessage: ''
-        }
-    },
-    beforeMount() {
-        const user = useUsers().getCurUser
-        if (user) {
-            this.userId = user.id
-            this.name = user.name
-            this.address = user.address
-            this.phone = user.phone
-            this.mail = user.mail
-        }
-    },
-    methods: {
-        onChangeInfo() {
-            this.isLoading = true
-            const params: updateUserParams = {
-                name: this.name,
-                address: this.address,
-                phone: this.phone,
-                mail: this.mail,
-            }
-            updateUserInfo(params, this.userId)
-                .then((res) => {
-
-                    this.isLoading = false
-                    this.dialog = true
-                    if(!res.message) {
-                        useUsers().setCurUser(res)
-                        this.dialogMes = 'Updated!'
-                    } else {
-                        this.dialogMes = res.message
-                    }
-                })
-                .catch((err) => {
-                    this.isLoading = false
-                    this.dialog = true
-                    this.dialogMes = "Error, try again later"
-                })
-        },
-        onChangePassword() {
-            if (this.newPassword === this.newPasswordRep) {
-                this.isLoading = true
-                const params: updateUserPasswordParams = {
-                    oldPassword: this.oldPassword,
-                    newPassword: this.newPassword,
-                }
-                updateUserPassword(params, this.userId)
-                    .then((res) => {
-
-                        this.isLoading = false
-                        this.dialog = true
-                        if(!res.message) {
-                            this.dialogMes = 'Updated!'
-                            this.errorMessage = ''
-                        } else {
-                            this.dialogMes = res.message
-                            this.errorMessage = ''
-
-                        }
-                    })
-                    .catch((err) => {
-                        this.isLoading = false
-                        this.dialog = true
-                        this.dialogMes = "Error, try again later"
-                        this.errorMessage = ''
-                    })
-            } else {
-                this.errorMessage = 'Passwords must be identical'
-            }
-
-        }
-    },
     setup() {
 
         const mailRules = [
@@ -222,9 +128,105 @@ export default defineComponent({
         const nameRules = [ (val: string) => val && val.length > 1 || 'Need more than 1 symbols']
         const addressRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
 
+        const name = ref('');
+        const address = ref('');
+        const phone = ref('');
+        const mail = ref('');
+        const oldPassword = ref('');
+        const newPassword = ref('');
+        const newPasswordRep = ref('');
+        const userId = ref(0);
+        const dialog = ref(false);
+        const dialogMes = ref('');
+        const isLoading = ref(false);
+        const errorMessage = ref('');
+
+        function onChangeInfo() {
+            isLoading.value = true
+            const params: updateUserParams = {
+                name: name.value,
+                address: address.value,
+                phone: phone.value,
+                mail: mail.value,
+            }
+            updateUserInfo(params, userId.value)
+                .then((res) => {
+
+                    isLoading.value = false
+                    dialog.value = true
+                    if(!res.message) {
+                        useUsers().setCurUser(res)
+                        dialogMes.value = 'Updated!'
+                    } else {
+                        dialogMes.value = res.message
+                    }
+                })
+                .catch((err) => {
+                    isLoading.value = false
+                    dialog.value = true
+                    dialogMes.value = "Error, try again later"
+                })
+        };
+        function onChangePassword() {
+            if (newPassword.value === newPasswordRep.value) {
+                isLoading.value = true
+                const params: updateUserPasswordParams = {
+                    oldPassword: oldPassword.value,
+                    newPassword: newPassword.value,
+                }
+                updateUserPassword(params, userId.value)
+                    .then((res) => {
+
+                        isLoading.value = false
+                        dialog.value = true
+                        if(!res.message) {
+                            dialogMes.value = 'Updated!'
+                            errorMessage.value = ''
+                        } else {
+                            dialogMes.value = res.message
+                            errorMessage.value = ''
+
+                        }
+                    })
+                    .catch((err) => {
+                        isLoading.value = false
+                        dialog.value = true
+                        dialogMes.value = "Error, try again later"
+                        errorMessage.value = ''
+                    })
+            } else {
+                errorMessage.value = 'Passwords must be identical'
+            }
+
+        }
+
+        onBeforeMount(() => {
+            const user = useUsers().getCurUser
+            if (user) {
+                userId.value = user.id
+                name.value = user.name
+                address.value = user.address
+                phone.value = user.phone
+                mail.value = user.mail
+            }
+        })
 
         return {
-            mailRules, phoneRules, passwordRules, nameRules, addressRules
+            mailRules, phoneRules, passwordRules, nameRules, addressRules,
+            name,
+            address,
+            phone,
+            mail,
+            oldPassword,
+            newPassword,
+            newPasswordRep,
+            userId,
+            dialog,
+            dialogMes,
+            isLoading,
+            errorMessage,
+            onChangeInfo,
+            onChangePassword,
         }
     }
 })

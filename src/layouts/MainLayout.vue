@@ -69,9 +69,10 @@
 
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, onBeforeMount, ref } from 'vue';
 import { useUsers } from 'stores/user'
 import EssentialLink, { EssentialLinkProps } from 'components/EssentialLink.vue';
+import { useRouter } from 'vue-router';
 
 const linksList: EssentialLinkProps[] = [
   {
@@ -97,37 +98,37 @@ export default defineComponent({
   components: {
     EssentialLink
   },
-  methods: {
-    logout() {
-        useUsers().clearUser()
-        this.$router.push('/login')
-    },
-    closeDialog() {
-        localStorage.removeItem("dialogMes")
-    }
-  },
-  data() {
-    return {
-        dialog: false ,
-        dialogMes: ''
-    }
-  },
-  computed: {
-    userName() {
+  setup () {
+    const leftDrawerOpen = ref(false);
+
+    const dialog = ref(false);
+    const dialogMes = ref('');
+
+    const router = useRouter()
+
+    const userName = computed(() => {
+
         useUsers().setFromLocal()
 
         const name = useUsers().getUserName
         return name
-    }
-  },
-  beforeMount() {
-    const cont = localStorage.getItem("dialogMes")
-    this.dialogMes = cont ? cont : ''
-    this.dialog = cont ? true : false
+    })
 
-  },
-  setup () {
-    const leftDrawerOpen = ref(false);
+    function logout() {
+        useUsers().clearUser()
+        router.push('/login')
+    }
+    function closeDialog() {
+        localStorage.removeItem("dialogMes")
+    }
+
+    onBeforeMount(() => {
+
+        const cont = localStorage.getItem("dialogMes")
+        dialogMes.value = cont ? cont : ''
+        dialog.value = cont ? true : false
+
+    })
 
 
     return {
@@ -135,7 +136,13 @@ export default defineComponent({
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value;
-      }
+      },
+
+      dialog,
+      dialogMes,
+      userName,
+      logout,
+      closeDialog
     };
   }
 });

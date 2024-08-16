@@ -19,6 +19,7 @@
 import { useShops } from 'src/stores/shops';
 import { ShopClass } from 'src/types/shop';
 import { defineComponent } from 'vue'
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
     name: "ShopCard",
@@ -28,13 +29,18 @@ export default defineComponent({
             required: true
         }
     },
-    methods: {
-        openShop () {
-            useShops().setCurShop(this.item)
-            this.$router.push({ path: "/shop" })
+    setup(props) {
+        const { item } = props;
+        const router = useRouter()
+
+        function openShop () {
+            useShops().setCurShop(item)
+            router.push({ path: "/shop" })
         }
-    },
-    setup() {
+
+        return {
+            openShop
+        }
 
     },
 })

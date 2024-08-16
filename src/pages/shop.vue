@@ -30,10 +30,10 @@ import ShopFilter from 'components/shop/Filter.vue'
 import { useShops } from 'src/stores/shops'
 import { useBusket } from 'src/stores/busket'
 import { ShopInterface } from 'src/types/shop'
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onBeforeMount, ref } from 'vue'
 import { ProductInterface } from 'src/types/product'
-import { getProducts } from 'src/api/products'
-import { getGroups } from 'src/api/groups'
+import { getProducts } from 'boot/products'
+import { getGroups } from 'boot/groups'
 import { useProducts } from 'src/stores/products'
 import { useGroups } from 'src/stores/groups'
 import { GroupInterface } from 'src/types/group'
@@ -44,80 +44,91 @@ export default defineComponent({
         ProductCard,
         ShopFilter
     },
-    async beforeMount() {
-        useShops().setFromLocal();
+    setup() {
+        const shopData = ref({} as ShopInterface | null);
+        const busket = ref([] as ProductInterface[]);
+        const shopProducts = ref([] as ProductInterface[]);
+        const groupsData = ref([] as GroupInterface[]);
+        const group = ref({} as GroupInterface | null);
+        const currentPage = ref(1);
+        const curGroupId = ref(0);
+        const curSearch = ref('');
+        const maxPages = ref(1);
 
-        const curShop = useShops().getCurShop
-        this.shopData = curShop
-
-        const busketData = useBusket().getBusket
-        this.busket = busketData
-
-        if (this.shopData?.id) {
-            await getProducts(this.shopData.id, 1, {})
-                .then((res) => {
-                    useProducts().setProducts(res.products)
-                    this.maxPages = res.pages
-
-                })
-            this.shopProducts = useProducts().getProducts
-        }
-
-        await getGroups()
-            .then((res) => {
-                useGroups().setGroups(res)
-            })
-        this.groupsData = useGroups().getGroups
-
-    },
-    data() {
-        return {
-            shopData: {} as ShopInterface | null,
-            busket: [] as ProductInterface[],
-            shopProducts: [] as ProductInterface[],
-            groupsData: [] as GroupInterface[],
-            group: {} as GroupInterface | null,
-            currentPage: 1,
-            curGroupId: 0,
-            curSearch: '',
-            maxPages: 1
-        }
-    },
-
-    methods: {
-        checkItemBusket(item: ProductInterface) {
-            const itemInBusket = this.busket.find(e => e.id === item?.id)
+        function checkItemBusket(item: ProductInterface) {
+            const itemInBusket = busket.value.find(e => e.id === item?.id)
             if (itemInBusket) {
                 return true
             }
             return false
-        },
-        async onFind(params: { groupId?: number, searchInput?: string}){
-            this.curGroupId = params.groupId ? params.groupId : 0
-            this.curSearch = params.searchInput ? params.searchInput : ''
+        };
+        async function onFind(params: { groupId?: number, searchInput?: string}){
+            curGroupId.value = params.groupId ? params.groupId : 0
+            curSearch.value = params.searchInput ? params.searchInput : ''
 
-            this.handleSearch()
-        },
-        async handleSearch() {
-            if (this.shopData){
+            handleSearch()
+        };
+        async function handleSearch() {
+            if (shopData.value){
 
                 const newParams: { groupId?: number, searchInput?: string} = {}
-                if (this.curGroupId != 0) {
-                    newParams.groupId = this.curGroupId
+                if (curGroupId.value != 0) {
+                    newParams.groupId = curGroupId.value
                 }
-                if (this.curSearch != '') {
-                    newParams.searchInput = this.curSearch
+                if (curSearch.value != '') {
+                    newParams.searchInput = curSearch.value
                 }
 
 
-                await getProducts(this.shopData.id, this.currentPage, newParams)
+                await getProducts(shopData.value.id, currentPage.value, newParams)
                     .then((res) => {
                         useProducts().setProducts(res.products)
-                        this.maxPages = res.pages
+                        maxPages.value = res.pages
 
                     })
-                this.shopProducts = useProducts().getProducts
+                shopProducts.value = useProducts().getProducts
             }
+        }
+
+        onBeforeMount(async () => {
+            useShops().setFromLocal();
+
+            const curShop = useShops().getCurShop
+            shopData.value = curShop
+
+            const busketData = useBusket().getBusket
+            busket.value = busketData
+
+            if (shopData.value?.id) {
+                await getProducts(shopData.value.id, 1, {})
+                    .then((res) => {
+                        useProducts().setProducts(res.products)
+                        maxPages.value = res.pages
+
+                    })
+                shopProducts.value = useProducts().getProducts
+            }
+
+            await getGroups()
+                .then((res) => {
+                    useGroups().setGroups(res)
+                })
+            groupsData.value = useGroups().getGroups
+        })
+
+        return {
+            shopData,
+            busket,
+            shopProducts,
+            groupsData,
+            group,
+            currentPage,
+            curGroupId,
+            curSearch,
+            maxPages,
+            checkItemBusket,
+            onFind,
+            handleSearch
         }
     }
 })

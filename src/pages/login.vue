@@ -43,46 +43,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onBeforeMount, ref } from 'vue'
 import { useUsers } from 'stores/user'
-import { loginUser } from 'src/api/user'
+import { loginUser } from 'boot/user'
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
-    data() {
-        return {
-            login: '',
-            password: '',
-            errorMessage: '',
-            isPwd: true
-        }
-    },
-    beforeMount() {
-        useUsers().setFromLocal()
-
-        const user = useUsers().getCurUser
-        if (user) {
-            this.$router.push('/')
-        }
-    },
-    methods: {
-        async onLogin() {
-            loginUser({login: this.login, password: this.password})
-                .then((res) => {
-                    if (!res.message) {
-                        useUsers().setCurUser(res)
-                        localStorage.setItem("dialogMes", "Successful login")
-                        this.$router.push('/')
-                    } else {
-                        this.errorMessage = res.message
-                    }
-
-                })
-                .catch((err) => {
-                    this.errorMessage = err.message
-
-                })
-        }
-    },
     setup() {
         const loginRules = [
             (val: string) => val && val.length > 0 || 'It can not be empty',
@@ -91,8 +57,51 @@ export default defineComponent({
 
         const passwordRules = [ (val: string) => val && val.length > 5 || 'Need more than 5 symbols']
 
+        const login = ref('');
+        const password = ref('');
+        const errorMessage = ref('');
+        const isPwd = ref(true);
+
+        const router = useRouter()
+
+        async function onLogin() {
+            loginUser({login: login.value, password: password.value})
+                .then((res) => {
+                    if (!res.message) {
+
+                        useUsers().setCurUser(res.user)
+                        localStorage.setItem("dialogMes", "Successful login")
+                        localStorage.setItem("token", res.token)
+                        router.push('/')
+                    } else {
+                        errorMessage.value = res.message
+                    }
+
+                })
+                .catch((err) => {
+                    errorMessage.value = err.message
+
+                })
+        }
+
+        onBeforeMount(() => {
+
+            useUsers().setFromLocal()
+
+            const user = useUsers().getCurUser
+            if (user) {
+                router.push('/')
+            }
+
+        })
+
         return {
-            loginRules, passwordRules
+            loginRules, passwordRules,
+            login,
+            password,
+            errorMessage,
+            isPwd,
+            onLogin
         }
     }
 })

@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { GroupClass } from 'src/types/group';
-import { defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 
 export default defineComponent({
     name: "ShopFilter",
@@ -37,29 +37,33 @@ export default defineComponent({
             required: true
         }
     },
-    data() {
-        return {
-            searchInput: '',
-            group: ''
-        }
-    },
-    methods: {
-        onSearch() {
-            const ind = this.groupsData.find((el) => el.name === this.group)
+    setup(props) {
+        const { groupsData, onFind } = props
+        const searchInput = ref('');
+        const group = ref('')
 
-            this.onFind({searchInput: this.searchInput, groupId: ind?.id})
-        }
-    },
-    computed: {
-        groupsList() {
+        const groupsList = computed(() => {
             const groupsList: string[] = []
             groupsList.push('All')
-            this.groupsData.forEach((item) => {
+            groupsData.forEach((item) => {
                 groupsList.push(item.name)
             })
             return groupsList;
+        })
+
+        function onSearch() {
+            const ind = groupsData.find((el) => el.name === group.value)
+
+            onFind({searchInput: searchInput.value, groupId: ind?.id})
         }
-    },
+
+        return {
+            searchInput,
+            group,
+            groupsList,
+            onSearch
+        }
+    }
 })
 </script>
 

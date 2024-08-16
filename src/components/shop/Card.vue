@@ -19,6 +19,7 @@
 import { defineComponent } from 'vue'
 import { ProductClass } from 'src/types/product';
 import { useProducts } from 'src/stores/products';
+import { useRouter } from 'vue-router';
 
 
 export default defineComponent({
@@ -33,20 +34,24 @@ export default defineComponent({
             required: true
         }
     },
-    methods: {
-        costString (cost: number) {
+    setup(props) {
+        const { item, isBusket } = props
+
+        const router = useRouter()
+
+        function costString (cost: number) {
 			return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₸'
-		},
-        openProduct () {
-            useProducts().setCurProduct(this.item)
-            this.$router.push({ path: "/product" })
+		}
+        function openProduct () {
+            useProducts().setCurProduct(item)
+            router.push({ path: "/product" })
         }
 
-    },
-    setup(props) {
 
         return {
-            product: props.item.product
+            product: item.product,
+            costString,
+            openProduct
         }
     },
 })

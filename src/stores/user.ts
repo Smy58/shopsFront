@@ -13,15 +13,18 @@ export const useUsers = defineStore('users', {
   },
   actions: {
     setCurUser(item: UserInterface) {
-      this.curUser = item;
-      this.curName = item.name;
 
-      localStorage.setItem("user", JSON.stringify(this.curUser))
+        this.curUser = item;
+        this.curName = item.name;
+
+        localStorage.setItem("user", JSON.stringify(this.curUser))
     },
     setFromLocal() {
         const sh = localStorage.getItem("user");
+
         if (sh) {
             const oldUser = JSON.parse(sh)
+
             this.setCurUser(oldUser)
         }
     },

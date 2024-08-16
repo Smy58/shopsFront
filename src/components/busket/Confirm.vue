@@ -45,13 +45,18 @@ export default defineComponent({
             required: true
         }
     },
-    methods: {
-        onBtn() {
-            this.handleBtn()
-        },
-        costString (cost: number) {
+    setup(props) {
+        function onBtn() {
+            props.handleBtn()
+        };
+        function costString (cost: number) {
 			return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₸'
-		},
+		};
+
+        return {
+            onBtn,
+            costString
+        }
     }
 })
 </script>

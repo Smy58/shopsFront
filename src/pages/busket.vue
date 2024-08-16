@@ -13,12 +13,9 @@
 
                 <q-dialog v-model="dialog" backdrop-filter="blur(4px)">
                     <q-card style="width: 320px">
-                        <q-card-section class="row items-center q-pb-none text-h6">
-                            Sent
-                        </q-card-section>
 
                         <q-card-section>
-                            Your order on processing.
+                            {{  dialogMes }}
                         </q-card-section>
 
                         <q-card-actions align="right">
@@ -43,10 +40,10 @@
 <script lang="ts">
 import { useBusket } from 'src/stores/busket'
 import { ProductInterface } from 'src/types/product'
-import { defineComponent } from 'vue'
+import { computed, defineComponent, onBeforeMount, ref } from 'vue'
 import BusketItem from 'components/busket/Item.vue'
 import BusketConfirm from 'components/busket/Confirm.vue'
-import { addOrder } from 'src/api/orders'
+import { addOrder } from 'boot/orders'
 import { useUsers } from 'src/stores/user'
 
 export default defineComponent({
@@ -54,59 +51,70 @@ export default defineComponent({
         BusketItem,
         BusketConfirm
     },
-    data() {
-        return {
-            busket: [] as ProductInterface[],
-            isLoading: false,
-            dialog: false
-        }
-    },
-    beforeMount() {
-        useBusket().setFromLocal()
-        const busketData = useBusket().getBusket
-        this.busket = busketData
+    setup() {
+        const busket = ref([] as ProductInterface[]);
+        const isLoading = ref(false);
+        const dialog = ref(false);
+        const dialogMes = ref('');
 
-
-    },
-    computed: {
-        totalSum() {
+        const totalSum = computed(() => {
             let sum = 0;
-            this.busket.forEach((item) => {
+            busket.value.forEach((item) => {
                 if (item.count) {
                     sum += (item.cost * item.count)
                 }
             })
 
             return sum
-        },
-        totalCount() {
+        });
+        const totalCount = computed(() => {
             let sum = 0;
-            this.busket.forEach((item) => {
+            busket.value.forEach((item) => {
                 if (item.count) {
                     sum += item.count
                 }
             })
 
             return sum
-        }
-    },
-    methods: {
-        async handleBtn () {
+        })
 
+
+        async function handleBtn () {
             const user = useUsers().getCurUser
             const userId = user ? user.id : 0
 
-            this.isLoading = true
-            await addOrder(this.busket, this.totalSum, userId)
+            isLoading.value = true
+            await addOrder(busket.value, totalSum.value, userId)
                 .then((res) => {
                     useBusket().clearBusket()
-                    this.busket = []
-                    this.isLoading = false
-                    this.dialog = true
-
+                    busket.value = []
+                    isLoading.value = false
+                    dialog.value = true
+                    dialogMes.value = 'Sent. Your order on processing.'
+                })
+                .catch((err) => {
+                    isLoading.value = false
+                    dialog.value = true
+                    dialogMes.value = 'Error, try again later'
                 })
         }
-    },
+
+        onBeforeMount(() => {
+            useBusket().setFromLocal()
+            const busketData = useBusket().getBusket
+            busket.value = busketData
+        })
+
+        return {
+            busket,
+            isLoading,
+            dialog,
+            totalSum,
+            totalCount,
+            dialogMes,
+            handleBtn
+        }
+    }
 })
 </script>
 

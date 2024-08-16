@@ -28,63 +28,77 @@
 <script lang="ts">
 import { useBusket } from 'src/stores/busket'
 import { ProductClass, ProductInterface } from 'src/types/product'
-import { defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 
 export default defineComponent({
     name: 'BusketItem',
-    data() {
-        return {
-            count: this.item.count ? this.item.count : 1,
-            product: this.item.product
-        }
-    },
     props: {
         item: {
             type: Object as () => ProductClass,
             required: true
         },
     },
-    methods: {
-        plusCount() {
-            if (this.isNotBigCount) {
-                this.count++
-                this.changeItemInBusket()
+    setup(props) {
+        const { item } = props
+
+        const count = ref(item.count ? item.count : 1);
+        const product = ref(item.product)
+
+        const isNotSmallCount = computed(() => {
+            if (count.value > 1) {
+                return true
             }
-        },
-        minusCount() {
-            if (this.isNotSmallCount) {
-                this.count--
-                this.changeItemInBusket()
+            return false
+        });
+        const isNotBigCount = computed(() => {
+            if (count.value < 20) {
+                return true
+            }
+            return false
+        });
+
+
+        function plusCount() {
+            if (isNotBigCount) {
+                count.value++
+                changeItemInBusket()
+            }
+        }
+        function minusCount() {
+            if (isNotSmallCount) {
+                count.value--
+                changeItemInBusket()
 
             }
-        },
-        costString (cost: number) {
+        }
+        function costString (cost: number) {
 			return cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ₸'
-		},
-        changeItemInBusket() {
-            const newItem: ProductInterface = this.item;
-            newItem.count = this.count;
+		}
+        function changeItemInBusket() {
+            const newItem: ProductInterface = item;
+            newItem.count = count.value;
 
             useBusket().changeCount(newItem);
-        },
-        removeFromBusket() {
-            useBusket().delItemBusket(this.item.id)
         }
-    },
-    computed: {
-        isNotSmallCount() {
-            if (this.count > 1) {
-                return true
-            }
-            return false
-        },
-        isNotBigCount() {
-            if (this.count < 20) {
-                return true
-            }
-            return false
-        },
-    },
+        function removeFromBusket() {
+            useBusket().delItemBusket(item.id)
+        }
+
+
+
+        return {
+            count,
+            product,
+            isNotSmallCount,
+            isNotBigCount,
+            plusCount,
+            minusCount,
+            costString,
+            changeItemInBusket,
+            removeFromBusket
+        }
+
+    }
 })
 </script>
 

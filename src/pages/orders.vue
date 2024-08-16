@@ -11,9 +11,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, onBeforeMount, ref } from 'vue'
 import OrderCard from 'components/orders/Card.vue'
-import { getOrders } from 'src/api/orders'
+import { getOrders } from 'boot/orders'
 import { useOrders } from 'src/stores/orders'
 import { OrderInterface } from 'src/types/order'
 import { useUsers } from 'src/stores/user'
@@ -22,23 +22,25 @@ export default defineComponent({
     components: {
         OrderCard
     },
-    data() {
+    setup() {
+        const ordersData = ref([] as OrderInterface[]);
+
+        onBeforeMount(async () => {
+            const user = useUsers().getCurUser
+
+            if (user) {
+                await getOrders(user.id)
+                .then((res) => {
+                    useOrders().setOrders(res)
+                })
+
+                ordersData.value = useOrders().getOrders
+            }
+        })
+
         return {
-            ordersData: [] as OrderInterface[]
+            ordersData
         }
-    },
-    async beforeMount() {
-        const user = useUsers().getCurUser
-
-        if (user) {
-            await getOrders(user.id)
-            .then((res) => {
-                useOrders().setOrders(res)
-            })
-
-            this.ordersData = useOrders().getOrders
-        }
-
     }
 })
 </script>
